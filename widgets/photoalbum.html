@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Photo Album</title>
+<style>
+body{
+  margin:0;
+  padding:20px;
+  font-family:'system-ui';
+  color:#063a45;
+  overflow:hidden;
+}
+
+#photo{ 
+  width:110%; 
+  height:110%; 
+  object-fit:contain; 
+  transition: opacity 1s ease-in-out; 
+  position:absolute; 
+  top: 0; bottom: 0; left: 0; right: 0;
+  margin: auto;
+}
+
+#overlay{
+  position:absolute;
+  bottom:10px;
+  left:10px;
+  color:#b2b9bb;
+  text-shadow:0 0 5px #000;
+  font-size:22px;
+}
+
+.title{
+font-weight:600;
+margin-bottom:8px;
+}
+
+</style>
+</head>
+<body>
+
+<img id="photo" src="" />
+<div id="overlay"></div>
+
+<script>
+// Example images per time of day
+const images = {
+  morning:[
+    {src:"images/seb2024-feb2026/IMG_20241009_121617.jpg", caption:"Good morning!"},
+    {src:"images/seb2024-feb2026/IMG_20260202_140105.jpg", caption:"Bright morning"},
+    {src:"images/seb2024-feb2026/IMG20241018150434.jpg", caption:"life is everything but a cardboard cutout"},
+    {src:"images/seb2024-feb2026/IMG20250315164904.jpg", caption:"cycle of life"},
+    {src:"images/seb2024-feb2026/IMG20250625133750.jpg", caption:"german breakfast"},
+    {src:"images/seb2024-feb2026/IMG20250919095209.jpg", caption:"smiles"},
+    {src:"images/seb2024-feb2026/IMG20250919095044.jpg", caption:"hope"}
+  ],
+  noon:[
+    {src:"images/seb2024-feb2026/IMG20250516070656.jpg", caption:"a new day, a new beginning"},
+    {src:"images/seb2024-feb2026/IMG20250621141914.jpg", caption:"heath"},
+    {src:"images/seb2024-feb2026/IMG20250727132803.jpg", caption:"the small things"},
+    {src:"images/seb2024-feb2026/IMG20250805122808.jpg", caption:"please 🥺"},
+    {src:"images/seb2024-feb2026/IMG20250129113024.jpg", caption:"please 🥺 2"},
+    {src:"images/seb2024-feb2026/IMG20250928151459.jpg", caption:"swans"},
+    {src:"images/seb2024-feb2026/IMG20250928150300.jpg", caption:"only a moment"}
+  ],
+  afternoon:[
+    {src:"images/seb2024-feb2026/IMG20250225164848.jpg", caption:"Vinyl afternoon"},
+    {src:"images/seb2024-feb2026/IMG20250315162859.jpg", caption:"walk☺️"},
+    {src:"images/seb2024-feb2026/IMG20250315163004.jpg", caption:"A rock in a hard place"},
+    {src:"images/seb2024-feb2026/IMG20250210161225.jpg", caption:"to find yourself, you must concede a battle against yourself"},
+    {src:"images/seb2024-feb2026/IMG20250315164649.jpg", caption:"take a rest for now"},
+    {src:"images/seb2024-feb2026/IMG20250516070642.jpg", caption:"Husmandsvej"},
+    {src:"images/seb2024-feb2026/IMG20250705134350.jpg", caption:"TIGER"},
+    {src:"images/seb2024-feb2026/IMG20250705141451.jpg", caption:"LEMUR1"},
+    {src:"images/seb2024-feb2026/IMG20250705141746.jpg", caption:"LEMUR2"},
+    {src:"images/seb2024-feb2026/IMG20250919100616.jpg", caption:"muddy waters"},
+    {src:"images/seb2024-feb2026/IMG20250919094913.jpg", caption:"crown"},
+    {src:"images/seb2024-feb2026/IMG20260219105345.jpg", caption:"greenland"},
+  ],
+  evening:[
+    {src:"images/seb2024-feb2026/IMG20250901195554.jpg", caption:"Evening glow"},
+    {src:"images/seb2024-feb2026/IMG20260216071922.jpg", caption:"Pink sky"},
+  ],
+  night:[
+    {src:"images/seb2024-feb2026/IMG20241105170525.jpg", caption:"Night vibes"},
+    {src:"images/seb2024-feb2026/IMG20260127011111.jpg", caption:"Christmas"},
+  ]
+}
+
+const photo = document.getElementById("photo");
+const overlay = document.getElementById("overlay");
+
+function getTimeSlot(){
+  const h = new Date().getHours();
+  if(h>=5 && h<12) return "morning";
+  if(h>=12 && h<14) return "noon";
+  if(h>=14 && h<17) return "afternoon";
+  if(h>=17 && h<20) return "evening";
+  if(h>=20 || h<5) return "night";
+}
+
+let slot = getTimeSlot();
+let slotImages = images[slot];
+let previousIndex = -1; // track last shown image
+
+function updatePhoto(){
+  if(slotImages.length === 0) return;
+
+  // pick random index not equal to previous
+  let index;
+  if(slotImages.length === 1){
+    index = 0; // only one image
+  } else {
+    do {
+      index = Math.floor(Math.random() * slotImages.length);
+    } while(index === previousIndex);
+  }
+
+  previousIndex = index;
+
+  const img = slotImages[index];
+
+  // fade out
+  photo.style.opacity = 0;
+
+  // wait for fade out before changing src
+  setTimeout(()=>{
+    // create a temporary image to preload
+    const temp = new Image();
+    temp.src = img.src;
+    temp.onload = ()=>{
+      photo.src = img.src;       // only swap when loaded
+      overlay.textContent = img.caption;
+      photo.style.opacity = 1;   // fade in
+    }
+  }, 500);
+}
+
+// initial photo
+updatePhoto();
+
+// rotate every 8s
+setInterval(updatePhoto, 8000);
+
+// update time slot every minute
+setInterval(()=>{
+  const newSlot = getTimeSlot();
+  if(newSlot !== slot){
+    slot = newSlot;
+    slotImages = images[slot];
+    previousIndex = -1; // reset
+    updatePhoto();
+  }
+}, 60000);
+</script>
+
+</body>
+</html>

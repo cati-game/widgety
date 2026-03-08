@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="css/styles.css">
+<title>Sun Widget</title>
+<script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
+<style>
+body {
+  margin:0;
+  padding:20px;
+  font-family:system-ui;
+}
+.title { font-weight:600; margin-bottom:6px; }
+.time { font-size:30px; margin-bottom:8px; }
+.bar {
+  height:14px;
+  background:rgba(255,255,255,0.4);
+  border-radius:10px;
+  overflow:hidden;
+  margin:6px 0;
+}
+.fill {
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#ffb347,#ffd86f,#6ee7b7);
+  transition: width 0.4s linear;
+}
+.times { display:flex; justify-content:space-between; font-size:14px; }
+.info { font-size:13px; opacity:.8; margin-top:6px; }
+</style>
+</head>
+<body>
+
+<div class="title">☀ Sun</div>
+<div class="time" id="clock">--:--</div>
+
+<div class="bar"><div class="fill" id="sunBar"></div></div>
+<div class="times">
+  <span id="sunrise">--:--</span>
+  <span id="sunset">--:--</span>
+</div>
+
+<div class="info" id="dayLength"></div>
+<div class="info" id="sunRemaining"></div>
+
+<script>
+let sunrise = new Date();
+let sunset = new Date();
+
+// DEFAULT fallback: 06:30 → 18:00 today
+function setDefaultSun() {
+  const now = new Date();
+  sunrise = new Date(now);
+  sunrise.setHours(6,30,0,0);
+  sunset = new Date(now);
+  sunset.setHours(18,0,0,0);
+
+  document.getElementById("sunrise").textContent = "06:30";
+  document.getElementById("sunset").textContent = "18:00";
+
+  const dayLength = sunset - sunrise;
+  const hours = Math.floor(dayLength/3600000);
+  const minutes = Math.floor((dayLength%3600000)/60000);
+  document.getElementById("dayLength").textContent =
+    "Day length: "+hours+"h "+minutes+"m";
+}
+
+// CLOCK updates immediately
+function updateClock(){
+  const now = new Date();
+  document.getElementById("clock").textContent =
+    now.toLocaleTimeString([], {hour12:false});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// Try geolocation
+if(navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(pos => {
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+    const times = SunCalc.getTimes(new Date(), lat, lon);
+
+    if(times.sunrise && times.sunset){
+      sunrise = times.sunrise;
+      sunset = times.sunset;
+
+      document.getElementById("sunrise").textContent =
+        sunrise.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:false});
+      document.getElementById("sunset").textContent =
+        sunset.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:false});
+
+      const dayLength = sunset - sunrise;
+      const hours = Math.floor(dayLength / 3600000);
+      const minutes = Math.floor((dayLength % 3600000) / 60000);
+      document.getElementById("dayLength").textContent =
+        "Day length: "+hours+"h "+minutes+"m";
+    } else {
+      setDefaultSun();
+    }
+
+    updateSunBar();
+    setInterval(updateSunBar, 1000);
+
+  }, err => {
+    // fallback if geolocation fails
+    setDefaultSun();
+    updateSunBar();
+    setInterval(updateSunBar, 1000);
+  });
+} else {
+  setDefaultSun();
+  updateSunBar();
+  setInterval(updateSunBar, 1000);
+}
+
+// UPDATE SUN BAR
+function updateSunBar(){
+  const now = new Date();
+  const total = sunset - sunrise;
+  const elapsed = now - sunrise;
+  let percent = (elapsed / total) * 100;
+  percent = Math.max(0, Math.min(100, percent));
+
+  document.getElementById("sunBar").style.width = percent + "%";
+
+  const remaining = sunset - now;
+  if(remaining > 0){
+    const h = Math.floor(remaining / 3600000);
+    const m = Math.floor((remaining % 3600000) / 60000);
+    document.getElementById("sunRemaining").textContent =
+      "Sunset in "+h+"h "+m+"m";
+  } else {
+    document.getElementById("sunRemaining").textContent = "Sun has set";
+  }
+}
+</script>
+</body>
+</html>

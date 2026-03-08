@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<style>
+body{
+  margin:0;
+  padding:20px;
+  font-family:system-ui;
+  color:#063a45;
+}
+
+.title{
+  font-weight:600;
+  margin-bottom:8px;
+  color:#a4b9bd; /* 063a45 */
+}
+
+.bar{
+  height:14px;
+  background:rgba(255,255,255,0.4);
+  border-radius:10px;
+  overflow:hidden;
+  margin-bottom:8px;
+}
+
+.fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#6ee7b7,#fcd34d,#fb7185);
+  transition: width 0.5s;
+}
+
+button {
+  padding:12px 20px;
+  font-size:16px;
+  font-weight:600;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  background: linear-gradient(90deg,#ffb347,#ffd86f,#6ee7b7);
+  color:#fff;
+  text-shadow:0 0 4px rgba(0,0,0,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom:10px;
+}
+
+button:hover {
+  transform:scale(1.05);
+  box-shadow:0 6px 20px rgba(0,0,0,0.3);
+}
+
+.type{
+  font-size:14px;
+  opacity:.8;
+  margin-top:6px;
+  color:#a4b9bd; /* 063a45 */
+}
+
+input[type="file"] {
+  margin-top:10px;
+  color:#a4b9bd; /* 063a45 */
+}
+
+#fileName{
+  font-size:13px;
+  color:#a4b9bd; /* 063a45 */
+  margin-top:4px;
+  opacity:0.8;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="title">☀ Trackmania Random Map</div>
+<button id="randomMapBtn">Open Random TMN Map</button>
+
+<div class="title">Daily Maps Progress</div>
+<div class="bar">
+  <div class="fill" id="tmbar"></div>
+</div>
+<div class="type" id="type">0 / 3 daily maps</div>
+
+<div class="title">Upload Map Replay</div>
+<input type="file" id="mapUpload" accept=".Replay.Gbx" />
+<div id="fileName"></div>
+
+<script>
+let dailyCount = 0;
+const dailyMax = 3;
+
+const fill = document.getElementById("tmbar");
+const typeText = document.getElementById("type");
+const fileNameDiv = document.getElementById("fileName");
+
+function updateBar() {
+  const percent = Math.min((dailyCount/dailyMax)*100, 100); // bar max 100%
+  fill.style.width = percent + "%";
+  typeText.textContent = dailyCount + " / " + dailyMax + " daily maps";
+}
+
+// Random TMN Map button
+document.getElementById("randomMapBtn").addEventListener("click", ()=>{
+  window.open("https://tmnf.exchange/trackrandom","_blank");
+  dailyCount++;
+  updateBar();
+});
+
+// Upload replay counts toward daily maps
+document.getElementById("mapUpload").addEventListener("change", (e)=>{
+  if(e.target.files.length>0){
+    const file = e.target.files[0];
+    fileNameDiv.textContent = "Uploaded: " + file.name + " :D";
+    dailyCount++;
+    updateBar();
+    alert("Replay uploaded!");
+  }
+});
+
+// Reset at midnight
+function scheduleReset() {
+  const now = new Date();
+  const nextMidnight = new Date();
+  nextMidnight.setHours(24,0,0,0);
+  const msUntilMidnight = nextMidnight - now;
+  setTimeout(()=>{
+    dailyCount = 0;
+    updateBar();
+    fileNameDiv.textContent = "";
+    scheduleReset();
+  }, msUntilMidnight);
+}
+
+scheduleReset();
+updateBar();
+
+</script>
+
+</body>
+</html>

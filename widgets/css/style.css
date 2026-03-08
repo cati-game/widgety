@@ -1,0 +1,11 @@
+body.day {
+  color: #063a45; /* light mode text */
+}
+
+body.night {
+  color: #a4b9bd; /* dark mode text */
+}
+
+.title, .time, .times, .info {
+  color: inherit;
+}

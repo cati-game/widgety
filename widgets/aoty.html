@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Random AOTY Album</title>
+<style>
+body {
+  margin:0;
+  padding:20px;
+  font-family:system-ui;
+  color:#063a45;
+}
+.button {
+  padding:12px 22px;
+  font-size:16px;
+  font-weight:600;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  background: linear-gradient(90deg,#ffb347,#ffd86f,#6ee7b7);
+  color:#fff;
+  margin-top:10px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.button:hover {
+  transform:scale(1.05);
+  box-shadow:0 6px 20px rgba(0,0,0,0.3);
+}
+</style>
+</head>
+<body>
+
+<div class="title">☀ Random AOTY Album</div>
+<button class="button" id="randomBtn">Open Random Album</button>
+
+<script>
+document.getElementById("randomBtn").addEventListener("click", ()=>{
+  window.open("https://www.albumoftheyear.org/random/","_blank");
+});
+</script>
+
+</body>
+</html>
