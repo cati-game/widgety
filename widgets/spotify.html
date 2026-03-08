@@ -38,5 +38,16 @@ allow="encrypted-media" allowtransparency="true"></iframe>
 <iframe src="https://open.spotify.com/embed/playlist/7mMgXWb0t86O3cZUspE2C9?si=39fe6838f8ed4670" 
 allow="encrypted-media" allowtransparency="true"></iframe>
 
+<script>
+
+window.addEventListener("message", (event)=>{
+  if(event.data.theme){
+    document.body.classList.remove("day","night");
+    document.body.classList.add(event.data.theme);
+  }
+});
+
+</script>
+
 </body>
 </html>

@@ -8,7 +8,6 @@ body {
   margin:0;
   padding:20px;
   font-family:system-ui;
-  color:#063a45;
 }
 .button {
   padding:12px 22px;
@@ -37,6 +36,14 @@ body {
 document.getElementById("randomBtn").addEventListener("click", ()=>{
   window.open("https://www.albumoftheyear.org/random/","_blank");
 });
+
+window.addEventListener("message", (event)=>{
+  if(event.data.theme){
+    document.body.classList.remove("day","night");
+    document.body.classList.add(event.data.theme);
+  }
+});
+
 </script>
 
 </body>

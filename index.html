@@ -105,6 +105,7 @@ function setThemeBasedOnSun(sunrise, sunset){
   }
 
   updateWidgetsTheme();
+  sendThemeToWidgets();
 }
 
 function updateWidgetsTheme() {
@@ -147,6 +148,14 @@ if(navigator.geolocation){
 } else {
   setDefaultSun();
   initTheme();
+}
+
+function sendThemeToWidgets(){
+  const theme = document.body.classList.contains("night") ? "night" : "day";
+
+  document.querySelectorAll(".widget iframe").forEach(frame=>{
+    frame.contentWindow.postMessage({theme: theme}, "*");
+  });
 }
 </script>
 </body>

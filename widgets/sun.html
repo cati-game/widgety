@@ -135,6 +135,14 @@ function updateSunBar(){
     document.getElementById("sunRemaining").textContent = "Sun has set";
   }
 }
+
+window.addEventListener("message", (event)=>{
+  if(event.data.theme){
+    document.body.classList.remove("day","night");
+    document.body.classList.add(event.data.theme);
+  }
+});
+
 </script>
 </body>
 </html>
